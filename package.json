@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@nestjs/cli": "^9.1.4",
-    "mongodb": "^4.11.0"
-  }
-}

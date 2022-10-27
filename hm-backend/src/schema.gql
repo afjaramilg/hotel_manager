@@ -20,7 +20,7 @@ enum OccupiedRoomEnum {
 }
 
 type Query {
-  room(roomId: String!): Room!
+  room(roomId: String!): Room
 }
 
 type Mutation {

@@ -21,14 +21,8 @@ export class RoomsService {
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
-        
-        if (!roomDoc)
-            throw new HttpException(
-                `No room matches ID: ${roomId}`,
-                HttpStatus.NOT_FOUND
-            );
 
-        return roomDoc as RoomGQLModel;
+        return roomDoc as (RoomGQLModel | null);
     }
 
     async insertOne(insertRoomData: UpsertRoomInput): Promise<RoomGQLModel> {
@@ -57,17 +51,13 @@ export class RoomsService {
             );
         }
 
-        if (!roomDoc)
-            throw new HttpException(
-                `No room matches ID: ${queryRoomId.roomId}`,
-                HttpStatus.NOT_FOUND
-            );
+        if (roomDoc) {
+            roomDoc.guestName = updateRoomData.guestName;
+            roomDoc.lastChanged = updateRoomData.lastChanged;
+            roomDoc.occupied = updateRoomData.occupied;
+        }
 
-        roomDoc.guestName = updateRoomData.guestName;
-        roomDoc.lastChanged = updateRoomData.lastChanged;
-        roomDoc.occupied = updateRoomData.occupied;
-
-        return (await roomDoc.save()) as RoomGQLModel;
+        return (await roomDoc.save()) as (RoomGQLModel | null);
     }
 
     async deleteOne(roomId: string): Promise<RoomGQLModel> {
@@ -82,13 +72,7 @@ export class RoomsService {
             );
         }
         
-        if (!roomDoc)
-            throw new HttpException(
-                `No room matches ID: ${roomId}`,
-                HttpStatus.NOT_FOUND
-            );
-
-        return roomDoc as RoomGQLModel;
+        return roomDoc as (RoomGQLModel | null);
     }
 
 }
