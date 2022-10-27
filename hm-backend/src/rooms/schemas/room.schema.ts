@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-
+import { OccupiedEnum } from 'src/rooms/enums/occupied.enum';
 export type RoomDocument = Room & Document;
 
 @Schema()
 export class Room {
-  @Prop({ required: true })
-  _id: string;
+  @Prop({ required: true, unique: true })
+  roomId: string;
 
   @Prop()
   guestName?: string;
@@ -14,8 +14,8 @@ export class Room {
   @Prop()
   lastChanged?: Date;
 
-  @Prop({ required: true })
-  occupied: Boolean;
+  @Prop({ required: true, enum: OccupiedEnum })
+  occupied: number;
 }
 
 export const RoomSchema = SchemaFactory.createForClass(Room);
