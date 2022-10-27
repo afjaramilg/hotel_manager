@@ -2,7 +2,7 @@ import { ID, InputType, Field } from '@nestjs/graphql';
 import { OccupiedEnum } from 'src/rooms/enums/occupied.enum';
 
 @InputType()
-export class CreateRoomInput {
+export class UpsertRoomInput {
     @Field(type => ID)
     roomId: string;
   

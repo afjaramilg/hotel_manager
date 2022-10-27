@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Room as RoomGQLModel } from 'src/rooms/models/room.model'
-import { CreateRoomInput } from './dto/create-room.input';
+import { UpsertRoomInput } from './dto/upsert-room.input';
 import { Room as RoomMongoModel, RoomDocument } from 'src/rooms/schemas/room.schema'
-import { OccupiedEnum } from 'src/rooms/enums/occupied.enum';
 import { InjectModel } from '@nestjs/mongoose';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class RoomsService {
@@ -12,15 +12,83 @@ export class RoomsService {
     constructor(@InjectModel(RoomMongoModel.name) private roomModel: Model<RoomDocument>,) { }
 
     async findOneByID(roomId: string): Promise<RoomGQLModel> {
-        const roomMongo: RoomMongoModel = await this.roomModel.findOne({ roomId }).exec();
-        return roomMongo as RoomGQLModel;
+        let roomDoc: RoomDocument;
+        try {
+            roomDoc = await this.roomModel.findOne({ roomId }).exec();
+        } catch (e) {
+            throw new HttpException(
+                e.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+        
+        if (!roomDoc)
+            throw new HttpException(
+                `No room matches ID: ${roomId}`,
+                HttpStatus.NOT_FOUND
+            );
+
+        return roomDoc as RoomGQLModel;
     }
 
-    async create(createRoomData: CreateRoomInput): Promise<RoomGQLModel> {
-        const createdRoomDoc = new this.roomModel(createRoomData);
-        const createdRoomMongo: RoomMongoModel = await createdRoomDoc.save();
-        const createdRoomGQL: RoomGQLModel = createdRoomMongo as RoomGQLModel ; 
-        return createdRoomGQL;
+    async insertOne(insertRoomData: UpsertRoomInput): Promise<RoomGQLModel> {
+        try {
+            const insertedRoomDoc = new this.roomModel(insertRoomData);
+            return (await insertedRoomDoc.save()) as RoomGQLModel;
+
+        } catch (e) {
+            throw new HttpException(
+                e.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    async updateOne(updateRoomData: UpsertRoomInput): Promise<RoomGQLModel> {
+        const queryRoomId = { roomId: updateRoomData.roomId };
+        
+        let roomDoc: RoomDocument;
+        try {
+            roomDoc = await this.roomModel.findOne(queryRoomId).exec();
+        } catch (e) {
+            throw new HttpException(
+                e.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
+        if (!roomDoc)
+            throw new HttpException(
+                `No room matches ID: ${queryRoomId.roomId}`,
+                HttpStatus.NOT_FOUND
+            );
+
+        roomDoc.guestName = updateRoomData.guestName;
+        roomDoc.lastChanged = updateRoomData.lastChanged;
+        roomDoc.occupied = updateRoomData.occupied;
+
+        return (await roomDoc.save()) as RoomGQLModel;
+    }
+
+    async deleteOne(roomId: string): Promise<RoomGQLModel> {
+        let roomDoc: RoomDocument;
+        try {
+            roomDoc = await this.roomModel.findOneAndDelete({ roomId }).exec();
+
+        } catch (e) {
+            throw new HttpException(
+                e.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+        
+        if (!roomDoc)
+            throw new HttpException(
+                `No room matches ID: ${roomId}`,
+                HttpStatus.NOT_FOUND
+            );
+
+        return roomDoc as RoomGQLModel;
     }
 
 }

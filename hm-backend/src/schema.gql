@@ -20,5 +20,18 @@ enum OccupiedRoomEnum {
 }
 
 type Query {
-  room(id: String!): Room!
+  room(roomId: String!): Room!
+}
+
+type Mutation {
+  insertRoom(insertRoomData: UpsertRoomInput!): Room!
+  updateRoom(updateRoomData: UpsertRoomInput!): Room!
+  deleteRoom(roomId: String!): Room!
+}
+
+input UpsertRoomInput {
+  roomId: ID!
+  guestName: String
+  lastChanged: DateTime
+  occupied: OccupiedRoomEnum!
 }
