@@ -18,9 +18,9 @@ import * as path from 'path';
       autoSchemaFile: path.join(process.cwd(), 'src/schema.gql'),
     }),
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGODB_USER}`
-      + `:${process.env.MONGODB_PASSWORD}`
-      + `@${process.env.MONGODB_HOST}`
+      `mongodb://${process.env.MONGODB_USER ?? process.env.DEFAULT_MONGODB_USER }`
+      + `:${process.env.MONGODB_PASSWORD ?? process.env.DEFAULT_MONGODB_PASSWORD}`
+      + `@${process.env.MONGODB_HOST ?? process.env.DEFAULT_MONGODB_HOST }`
       + '/hotel_manager_db?authSource=admin'
     ),
     RoomsModule,

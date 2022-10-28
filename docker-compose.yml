@@ -3,9 +3,15 @@ version: '3.1'
 services:
   hmbackend:
     image: hm-backend
+    container_name: hotel-manager-backend
     build: ./hm-backend
+    environment: 
+      - MONGODB_USER=root
+      - MONGODB_PASSWORD=example
+      - MONGODB_HOST=hmmongodb
+
     networks:
-      - hmnetwork
+      - hmbackend_net
     ports:
       - "3000:3000"
 
@@ -14,11 +20,17 @@ services:
     container_name: hotel-manager-db
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: "${MONGODB_USER}"
-      MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_PASSWORD}"
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "example"
     networks:
-      - hmnetwork
-    
+      - hmbackend_net
+    volumes:
+      - hmmongodb_vol:/data/db
+    # ports:
+    #   - "27017:27017"
 
 networks:
-  hmnetwork:
+  hmbackend_net:
+
+volumes:
+  hmmongodb_vol:

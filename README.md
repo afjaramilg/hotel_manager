@@ -10,7 +10,6 @@ A hotel management thingy.
 4. Run the back-end: `npm run start` (or `npm run start:dev` for development)
 
 ## Running in Docker
-1. Make sure you have a properly-configured MongoDB server.
-2. Set up the appropriate values for the variables in `./hm-backend/.env`. 
-3. `docker compose --env-file ./hm-backend/.env up -d` (not `docker stack deploy...`)
+`docker-compose.yml` provides a simple deployment configuration for local development or testing purposes.
+1. `docker compose up -d` (not `docker stack deploy...`)
 
