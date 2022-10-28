@@ -8,8 +8,9 @@ A hotel management thingy.
 2. Set up the appropriate values for the variables in `.env`. 
 3. `npm install` 
 4. Run the back-end: `npm run start` (or `npm run start:dev` for development)
+5. Go to `http://localhost:3000/rooms` to use the GraphQL playground
 
 ## Running in Docker
 `docker-compose.yml` provides a simple deployment configuration for local development or testing purposes.
 1. `docker compose up -d` (not `docker stack deploy...`)
-
+5. Go to `http://localhost:3000/rooms` to use the GraphQL playground
